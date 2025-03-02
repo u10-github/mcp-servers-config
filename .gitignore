@@ -1,0 +1,28 @@
+# 環境変数ファイル
+.env
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# OS関連
+.DS_Store
+Thumbs.db
+
+# エディタ関連
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# バックアップ
+backups/
+
+# ログ
+*.log
+
+# 一時ファイル
+tmp/
+temp/ 
