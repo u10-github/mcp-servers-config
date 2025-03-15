@@ -1,0 +1,211 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Cursorメモリバンクガイド
+
+## 概要
+
+Cursorのメモリバンクは、プロジェクトの知識を体系的に管理し、セッション間で一貫した開発を可能にするシステムです。各セッションの開始時に、メモリバンクの内容を完全に読み込むことで、プロジェクトの文脈を正確に理解し、効果的な開発を継続することができます。
+
+## 初期セットアップ
+
+メモリバンクを使用するには、以下のディレクトリとファイルが必要です。存在しない場合は自動的に作成されます：
+
+```bash
+# メモリバンクディレクトリの作成
+mkdir -p .memory-bank
+
+# Cursorルールディレクトリの作成
+mkdir -p .cursor/rules
+
+# コアファイルの作成（存在しない場合のみ）
+touch .memory-bank/projectbrief.md
+touch .memory-bank/productContext.md
+touch .memory-bank/systemPatterns.md
+touch .memory-bank/techContext.md
+touch .memory-bank/activeContext.md
+touch .memory-bank/progress.md
+
+# Cursorルールファイルの作成
+touch .cursor/rules/memory-bank.mdc
+```
+
+各ファイルは、存在しない場合にのみ作成され、既存のファイルは上書きされません。
+
+## ファイル構成
+
+### メモリバンクの配置
+すべてのメモリバンク関連ファイルは、プロジェクトルート直下の`.memory-bank`ディレクトリに配置します：
+
+```
+プロジェクトルート/
+└── .memory-bank/
+    ├── projectbrief.md
+    ├── productContext.md
+    ├── systemPatterns.md
+    ├── techContext.md
+    ├── activeContext.md
+    └── progress.md
+```
+
+### Cursorルールの配置
+プロジェクトのCursorルールは以下の場所に配置します：
+```
+プロジェクトルート/
+└── .cursor/
+    └── rules/
+        └── memory-bank.mdc
+```
+
+## メモリバンクの構造
+
+メモリバンクは、必須のコアファイルとオプションのコンテキストファイルで構成されています。各ファイルは明確な階層構造を持ち、相互に関連しています：
+
+```mermaid
+flowchart TD
+    PB[projectbrief.md] --> PC[productContext.md]
+    PB --> SP[systemPatterns.md]
+    PB --> TC[techContext.md]
+    
+    PC --> AC[activeContext.md]
+    SP --> AC
+    TC --> AC
+    
+    AC --> P[progress.md]
+```
+
+### コアファイル（必須）
+
+1. `.memory-bank/projectbrief.md`
+   - プロジェクトの基礎となる文書
+   - プロジェクト開始時に作成（存在しない場合）
+   - 【コアリクワイアメント】「プロジェクトの基本要件」と【プロジェクトゴール】「達成目標」を定義
+   - プロジェクトスコープの信頼できる情報源
+
+2. `.memory-bank/productContext.md`
+   - プロジェクトの存在意義
+   - 解決する課題
+   - 期待される動作
+   - ユーザー体験の目標
+
+3. `.memory-bank/activeContext.md`
+   - 現在の作業フォーカス
+   - 最近の変更内容
+   - 次のステップ
+   - アクティブな意思決定事項と考慮点
+
+4. `.memory-bank/systemPatterns.md`
+   - 【システムアーキテクチャ】「システムの全体構造」
+   - 重要な技術的決定事項
+   - 使用している【デザインパターン】「設計の型」
+   - コンポーネント間の関係
+
+5. `.memory-bank/techContext.md`
+   - 使用技術
+   - 開発環境のセットアップ
+   - 技術的な制約
+   - 依存関係
+
+6. `.memory-bank/progress.md`
+   - 動作確認済みの機能
+   - 残りの実装タスク
+   - 現在の状態
+   - 既知の課題
+
+### 追加コンテキスト
+`.memory-bank`内に、必要に応じて以下のような追加ファイル/フォルダを作成します：
+- 複雑な機能のドキュメント
+- 統合仕様
+- API仕様
+- テスト戦略
+- デプロイ手順
+
+## 基本ワークフロー
+
+### 計画モード
+```mermaid
+flowchart TD
+    Start[開始] --> ReadFiles[メモリバンク読み込み]
+    ReadFiles --> CheckFiles{ファイル完備?}
+    
+    CheckFiles -->|No| Plan[計画作成]
+    Plan --> Document[チャットで文書化]
+    
+    CheckFiles -->|Yes| Verify[コンテキスト確認]
+    Verify --> Strategy[戦略立案]
+    Strategy --> Present[アプローチ提案]
+```
+
+### 実行モード
+```mermaid
+flowchart TD
+    Start[開始] --> Context[メモリバンク確認]
+    Context --> Update[ドキュメント更新]
+    Update --> Rules[必要に応じてcursor-rules更新]
+    Rules --> Execute[タスク実行]
+    Execute --> Document[変更の文書化]
+```
+
+## ドキュメントの更新
+
+メモリバンクは以下の場合に更新します：
+1. 新しいプロジェクトパターンの発見時
+2. 重要な変更の実装後
+3. ユーザーから「メモリバンク更新」の要求があった場合（全ファイルのレビューが必須）
+4. コンテキストの明確化が必要な場合
+
+```mermaid
+flowchart TD
+    Start[更新プロセス]
+    
+    subgraph Process[プロセス]
+        P1[全ファイルレビュー]
+        P2[現状の文書化]
+        P3[次のステップの明確化]
+        P4[cursor-rulesの更新]
+        
+        P1 --> P2 --> P3 --> P4
+    end
+    
+    Start --> Process
+```
+
+注意：「メモリバンク更新」がトリガーされた場合、更新が不要なファイルも含めて、すべてのメモリバンクファイルをレビューする必要があります。特に、現在の状態を追跡するactiveContext.mdとprogress.mdに注目します。
+
+## プロジェクトインテリジェンス（memory-bank.mdc）
+
+`.cursor/rules/memory-bank.mdc`ファイルは、各プロジェクトの学習ジャーナルとして機能します。コードだけでは分からない重要なパターン、設定、プロジェクトの知見を記録します。プロジェクトとの関わりを通じて、重要な洞察を発見し文書化していきます。
+
+```mermaid
+flowchart TD
+    Start{新パターンの発見}
+    
+    subgraph Learn [学習プロセス]
+        D1[パターンの特定]
+        D2[ユーザーとの確認]
+        D3[memory-bank.mdcへの記録]
+    end
+    
+    subgraph Apply [適用]
+        A1[memory-bank.mdcの読み込み]
+        A2[学習したパターンの適用]
+        A3[将来の作業改善]
+    end
+    
+    Start --> Learn
+    Learn --> Apply
+```
+
+### 記録すべき内容
+- 重要な実装パス
+- ユーザーの設定と作業フロー
+- プロジェクト固有のパターン
+- 既知の課題
+- プロジェクトの意思決定の変遷
+- ツールの使用パターン
+
+フォーマットは柔軟です - ユーザーとプロジェクトとの効果的な協働に役立つ価値ある洞察の記録に重点を置きます。`memory-bank.mdc`は、協働を通じてより賢くなっていく生きたドキュメントとして考えてください。
+
+重要：各セッション開始時は完全にフレッシュな状態から始まります。メモリバンクは過去の作業との唯一のつながりです。その正確性が作業の効果を左右するため、精密さと明確さを持って維持する必要があります。 
