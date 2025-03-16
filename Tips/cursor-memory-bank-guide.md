@@ -119,28 +119,56 @@ flowchart TD
 
 ## 基本ワークフロー
 
-### 計画モード
+### 自動トリガー
+メモリバンクの操作は、以下のタイミングで自動的にトリガーされます：
+
+1. 計画フェーズ
+   - 開始時：メモリバンク読み込み（自動）
+   - 計画決定時：メモリバンク更新（自動）
+
+2. 実行フェーズ
+   - 開始時：メモリバンク読み込み（自動）
+   - 実行結果成功時：メモリバンク更新（自動）
+
 ```mermaid
 flowchart TD
-    Start[開始] --> ReadFiles[メモリバンク読み込み]
+    P1[計画フェーズ開始] -->|自動| R1[メモリバンク読み込み]
+    R1 --> PL[計画立案]
+    PL --> PD[計画決定]
+    PD -->|自動| U1[メモリバンク更新]
+    
+    U1 --> E1[実行フェーズ開始]
+    E1 -->|自動| R2[メモリバンク読み込み]
+    R2 --> EX[実行]
+    EX --> ET[テスト]
+    ET -->|成功時自動| U2[メモリバンク更新]
+```
+
+### 計画時のワークフロー
+```mermaid
+flowchart TD
+    Start[開始] -->|自動| ReadFiles[メモリバンク読み込み]
     ReadFiles --> CheckFiles{ファイル完備?}
     
     CheckFiles -->|No| Plan[計画作成]
     Plan --> Document[チャットで文書化]
+    Document -->|自動| Update1[メモリバンク更新]
     
     CheckFiles -->|Yes| Verify[コンテキスト確認]
     Verify --> Strategy[戦略立案]
     Strategy --> Present[アプローチ提案]
+    Present -->|自動| Update2[メモリバンク更新]
 ```
 
-### 実行モード
+### 実行時のワークフロー
 ```mermaid
 flowchart TD
-    Start[開始] --> Context[メモリバンク確認]
+    Start[開始] -->|自動| Context[メモリバンク確認]
     Context --> Update[ドキュメント更新]
     Update --> Rules[必要に応じてcursor-rules更新]
     Rules --> Execute[タスク実行]
-    Execute --> Document[変更の文書化]
+    Execute --> Test[テスト実行]
+    Test -->|成功時自動| Document[変更の文書化]
 ```
 
 ## ドキュメントの更新
@@ -150,6 +178,9 @@ flowchart TD
 2. 重要な変更の実装後
 3. ユーザーから「メモリバンク更新」の要求があった場合（全ファイルのレビューが必須）
 4. コンテキストの明確化が必要な場合
+5. 以下の自動トリガー時：
+   - 計画フェーズの決定時
+   - 実行結果が成功した時
 
 ```mermaid
 flowchart TD
