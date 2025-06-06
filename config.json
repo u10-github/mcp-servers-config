@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Users\\yutoo\\AppData\\Roaming\\npm\\node_modules\\@executeautomation\\playwright-mcp-server\\dist\\index.js"
+      ]
+    }
+  }
+} 
